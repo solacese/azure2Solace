@@ -26,26 +26,22 @@ To learn how to stream data from Solace PubSub+ broker to Azure messaging servic
 In this example we will create two queues in Solace PubSub+, one of it will receive messages from Azure function over HTTP and another over C#.
 Log on to Solace Console
 1.	Create a queue that will receive data from Azure function using REST <br />
-solace> enable<br />
-solace# configure<br />
-solace# (configure)# message-spool message-vpn <VPN Name> <br />
-solace(configure/message-spool/message-vpn)# create queue azure-rest-queue<br />
-solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
-solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
-solace(configure/message-vpn/my-azure-queue )# end<br />
-########TODOO: Add topic subscription
+    solace> enable<br />
+    solace# configure<br />
+    solace# (configure)# message-spool message-vpn <VPN Name> <br />
+    solace(configure/message-spool/message-vpn)# create queue azure-rest-queue<br />
+    solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
+    solace(configure/message-vpn/my-azure-queue )# subscription topic azure/2/solace-rest<br />
+    solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
+    solace(configure/message-vpn/my-azure-queue )# exit<br />
 
 
-2.	Create a queue that will receive data from Azure function using C#<br />
-solace> enable<br />
-solace# configure<br />
-solace# (configure)# message-spool message-vpn <VPN Name> <br />
-solace(configure/message-spool/message-vpn)# create queue **azure-c#-queue**<br />
-solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
-solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
-solace(configure/message-vpn/my-azure-queue )# end<br />
-########TODOO: Add topic subscription
-Take a note of your Solace Event broker IP address and port no.
+2. Create a queue that will receive data from Azure function using C#<br />
+   solace(configure/message-spool/message-vpn)# create queue **azure-c#-queue**<br />
+   solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
+   solace(configure/message-vpn/my-azure-queue )# subscription topic azure/2/solace<br />
+   solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
+   solace(configure/message-vpn/my-azure-queue )# end<br />
 
 #### Azure Function Setup
 
@@ -67,24 +63,23 @@ In the above screen you will do the following:
   
 * Open the local.settings.json file and add the following properties as shown in the picture below:
     
-    //Update the Service Bus end point connection string below
-    "SBConnection": "...=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",
+    //Update the Service Bus end point connection string below </br>
+    "SBConnection": "...=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",</br>
 
-    //Update the Solace Host (SMF) URL string below
-    "solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",
+    //Update the Solace Host (SMF) URL string below</br>
+    "solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",</br>
 
-    //Update the Solace Username string below
-    "solace-username": "solace-cloud-client",
+    //Update the Solace Username string below</br>
+    "solace-username": "solace-cloud-client",</br>
 
-    //Update the Solace Password string below
-    "solace-password": "abcgdjsjj",
+    //Update the Solace Password string below</br>
+    "solace-password": "abcgdjsjj",</br>
 
-    //Update the Solace VPN Name string below
-    "solace-vpnname": "sumeet",
+    //Update the Solace VPN Name string below</br>
+    "solace-vpnname": "sumeet",</br>
 
-    //Update the Solace Topic string below
-    "solace-topic": "azure/2/solace"
-
+    //Update the Solace Topic string below</br>
+    "solace-topic": "azure/2/solace"</br>
 
 * Using NuGet package manager, search and install Solace library.
   ![ ](img/add-solace-library.png)
