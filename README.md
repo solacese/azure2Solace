@@ -25,25 +25,25 @@ To learn how to stream data from Solace PubSub+ broker to Azure messaging servic
 #### Configure the Solace PubSub+ Event broker to receives messages on a queue 
 In this example we will create two queues in Solace PubSub+, one of it will receive messages from Azure function over HTTP and another over C#.
 Log on to Solace Console
-1.	Create a queue that will receive data from Azure function using REST 
-solace> enable
-solace# configure
-solace# (configure)# message-spool message-vpn <VPN Name> 
-solace(configure/message-spool/message-vpn)# create queue azure-rest-queue
-solace(configure/message-vpn/my-azure-queue )# permission all consume 
-solace(configure/message-vpn/my-azure-queue )# no shutdown
-solace(configure/message-vpn/my-azure-queue )# end
+1.	Create a queue that will receive data from Azure function using REST <br />
+solace> enable<br />
+solace# configure<br />
+solace# (configure)# message-spool message-vpn <VPN Name> <br />
+solace(configure/message-spool/message-vpn)# create queue azure-rest-queue<br />
+solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
+solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
+solace(configure/message-vpn/my-azure-queue )# end<br />
 ########TODOO: Add topic subscription
 
 
-2.	Create a queue that will receive data from Azure function using C#
-solace> enable
-solace# configure
-solace# (configure)# message-spool message-vpn <VPN Name> 
-solace(configure/message-spool/message-vpn)# create queue **azure-c#-queue**
-solace(configure/message-vpn/my-azure-queue )# permission all consume 
-solace(configure/message-vpn/my-azure-queue )# no shutdown
-solace(configure/message-vpn/my-azure-queue )# end
+2.	Create a queue that will receive data from Azure function using C#<br />
+solace> enable<br />
+solace# configure<br />
+solace# (configure)# message-spool message-vpn <VPN Name> <br />
+solace(configure/message-spool/message-vpn)# create queue **azure-c#-queue**<br />
+solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
+solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
+solace(configure/message-vpn/my-azure-queue )# end<br />
 ########TODOO: Add topic subscription
 Take a note of your Solace Event broker IP address and port no.
 
@@ -108,6 +108,8 @@ namespace SB2SolaceCSharp
         
         private static string sHost = Environment.GetEnvironmentVariable("solace-host");
         
+        private static string sTopic = Environment.GetEnvironmentVariable("solace-topic");
+        
         [FunctionName("Function1")]
         public static void Run([ServiceBusTrigger("testq", Connection = "SBConnection")]string myQueueItem, ILogger log)
         {
@@ -125,11 +127,11 @@ namespace SB2SolaceCSharp
         public static void sendMessage2Solace(String msg)
         {
             IMessage message = ContextFactory.Instance.CreateMessage();
-            message.Destination = ContextFactory.Instance.CreateTopic("azure");
+            message.Destination = ContextFactory.Instance.CreateTopic(sTopic);
             message.DeliveryMode = MessageDeliveryMode.Direct;
             message.BinaryAttachment = Encoding.ASCII.GetBytes(msg);
         
-            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, "azure");
+            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, sTopic);
             session.Send(message);
             message.Dispose();
             Console.WriteLine("Message sent. Exiting.");
