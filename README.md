@@ -66,7 +66,25 @@ In the above screen you will do the following:
   * Click **Next** to finish create a project.
   
 * Open the local.settings.json file and add the following properties as shown in the picture below:
-  ![ ](img/settings.png)
+    
+    //Update the Service Bus end point connection string below
+    "SBConnection": "...=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",
+
+    //Update the Solace Host (SMF) URL string below
+    "solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",
+
+    //Update the Solace Username string below
+    "solace-username": "solace-cloud-client",
+
+    //Update the Solace Password string below
+    "solace-password": "abcgdjsjj",
+
+    //Update the Solace VPN Name string below
+    "solace-vpnname": "sumeet",
+
+    //Update the Solace Topic string below
+    "solace-topic": "azure/2/solace"
+
 
 * Using NuGet package manager, search and install Solace library.
   ![ ](img/add-solace-library.png)
