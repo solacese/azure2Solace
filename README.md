@@ -1,3 +1,5 @@
+**This is not yet complete and hence havent made it public yet**
+
 # azure2Solace
 # Stream data from Azure Service Bus to Solace PubSub+ Event broker Using Azure Function
 
