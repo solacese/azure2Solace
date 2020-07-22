@@ -17,6 +17,7 @@ namespace SB2SolaceCSharp
         private static string sPassword = Environment.GetEnvironmentVariable("solace-password");
         private static string sVPNName = Environment.GetEnvironmentVariable("solace-vpnname");
         private static string sHost = Environment.GetEnvironmentVariable("solace-host");
+        private static string sTopic = Environment.GetEnvironmentVariable("solace-topic");
 
         [FunctionName("Function1")]
         public static void Run([ServiceBusTrigger("testq", Connection = "SBConnection")]string myQueueItem, ILogger log)
@@ -35,11 +36,11 @@ namespace SB2SolaceCSharp
         public static void sendMessage2Solace(String msg)
         {
             IMessage message = ContextFactory.Instance.CreateMessage();
-            message.Destination = ContextFactory.Instance.CreateTopic("azure");
+            message.Destination = ContextFactory.Instance.CreateTopic(sTopic);
             message.DeliveryMode = MessageDeliveryMode.Direct;
             message.BinaryAttachment = Encoding.ASCII.GetBytes(msg);
 
-            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, "azure");
+            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, sTopic);
             session.Send(message);
             message.Dispose();
             Console.WriteLine("Message sent. Exiting.");
