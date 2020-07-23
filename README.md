@@ -44,57 +44,55 @@ solace(configure/message-vpn/my-azure-queue )# exit<br />
 
 #### Azure Function Setup (For C#/.Net APIs)
 
-* Create a new Azure function project in Visual Studio 
+1. Create a new Azure function project in Visual Studio 
   ![ ](img/create-new-vs-project.png)
   Select **Azure Functions** from the list and click **Next**
 
-* Configure your new project
+2. Configure your new project
   ![ ](img/configure-project.png)
 
-* Create a new Azure Function application
-![ ](img/create-azure-func-app.png)
-In the above screen you will do the following:
-  * Select **Azure Service Bus Trigger** from the list
-  * Specifiy **Storage Account**
-  * Specify **Connection String Setting Name**. This is the name that we will use in the Azure function code later.
-  * Specify Service Bus **Queue Name**. This is the queue that we will stream data from to Solace Event broker.
-  * Click **Next** to finish create a project.
+3. Create a new Azure Function application
+  ![ ](img/create-azure-func-app.png)
+   In the above screen you will do the following:
+     * Select **Azure Service Bus Trigger** from the list
+     * Specifiy **Storage Account**
+     * Specify **Connection String Setting Name**. This is the name that we will use in the Azure function code later.
+     * Specify Service Bus **Queue Name**. This is the queue that we will stream data from to Solace Event broker.
+     * Click **Next** to finish create a project.
   
-* Open the **local.settings.json** file and add the following properties as shown in the code below:
+4. Open the **local.settings.json** file and add the following properties as shown in the code below:
 
-//Update the Service Bus end point connection string below <br/>
-"SBConnection": "Endpoint=....windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",<br />
-//Update the Solace Host (SMF) URL string below<br/>
-"solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",<br/>
-//Update the Solace Username string below<br/>
-"solace-username": "solace-cloud-client",<br/>
-//Update the Solace Password string below<br/>
-"solace-password": "abcgdjsjj",<br/>
-//Update the Solace VPN Name string below<br/>
-"solace-vpnname": "sumeet"<br/>
-//Update the Solace Topic string below<br/>
-"solace-topic": "azure/2/solace"<br/>
+   //Update the Service Bus end point connection string below <br/>
+   "SBConnection": "Endpoint=....windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",<br />
+   //Update the Solace Host (SMF) URL string below<br/>
+   "solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",<br/>
+   //Update the Solace Username string below<br/>
+   "solace-username": "solace-cloud-client",<br/>
+   //Update the Solace Password string below<br/>
+   "solace-password": "abcgdjsjj",<br/>
+   //Update the Solace VPN Name string below<br/>
+   "solace-vpnname": "sumeet"<br/>
+   //Update the Solace Topic string below<br/>
+   "solace-topic": "azure/2/solace"<br/>
 
-* Using NuGet package manager, search and install Solace library.
-  ![ ](img/add-solace-library.png)
+5. Using NuGet package manager, search and install Solace library.
+   ![ ](img/add-solace-library.png)
 
-* Create a new class called **SolacePublisher** and add the following code to **SolacePublisher.cs** class.
-
-//Copy the following code and paste it in your Function1.cs file.
+6. Create a new class called **SolacePublisher** and add the following code to **SolacePublisher.cs** class.
 
 `
 using System;
 using SolaceSystems.Solclient.Messaging;
 using System.Threading;
 using System.Text;
-
 namespace SB2SolaceCSharp
 {
+
     public class SolacePublisher
     {
+
         private IContext context = null;
         private ISession session = null;
-
         private string sUserName = "default";
         private string sPassword = "default";
         private string sVPNName = "default";
@@ -200,11 +198,9 @@ namespace SB2SolaceCSharp
         }
     }
 }
-
 `
-* Add the following code to **function1.cs** class.
 
-//Copy the following code and paste it in your Function1.cs file.
+7. Add the following code to **function1.cs** class.
 
 `
 using System;
@@ -236,29 +232,30 @@ namespace SB2SolaceCSharp
 }
 `
 
-*  Now Build your project.
-*  Publish your Azure function as follows:
-![ ](img/publish1.png)
+8. Now Build your project.
+9. Publish your Azure function as follows:
+   ![ ](img/publish1.png)
 
-![ ](img/publish2.png)
+   ![ ](img/publish2.png)
 
-![ ](img/publish3.png)
+   ![ ](img/publish3.png)
 
-![ ](img/publish4.png)
+   ![ ](img/publish4.png)
 
-![ ](img/publish5.png)
+   ![ ](img/publish5.png)
 
-![ ](img/publish6.png)
+   ![ ](img/publish6.png)
 
-![ ](img/published.png)
+   ![ ](img/published.png)
 
-*  Now that your function is published, logon to your Azure portal and start the function app.
-![ ](img/start-function.png)
-*  Lets look at the Solace queue via Solace broker's WebUI that will be receiving messages from servicebus.
-![ ](img/no-msg-spooled.png)
+10. Now that your function is published, logon to your Azure portal and start the function app.
+   ![ ](img/start-function.png)
+   
+11. Lets look at the Solace queue via Solace broker's WebUI that will be receiving messages from servicebus.
+   ![ ](img/no-msg-spooled.png)
 
-* Send test messages to Service Bus Queue (on which you have configured the trigger to invoke above Azure function). Below is a screen grab of console output from my test application.
-![ ](img/send-test-msg-2-sb.png)
+12. Send test messages to Service Bus Queue (on which you have configured the trigger to invoke above Azure function). Below is a screen grab of console output from my test application.
+   ![ ](img/send-test-msg-2-sb.png)
 
-* Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
-![ ](img/c#-msg-rcvd.png)
+13. Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
+   ![ ](img/c#-msg-rcvd.png)
