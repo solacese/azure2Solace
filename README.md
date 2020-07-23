@@ -1,6 +1,3 @@
-**This is not yet complete and hence havent made it public yet**
-
-# azure2Solace
 # Stream data from Azure Service Bus to Solace PubSub+ Event broker Using Azure Function
 
 ## What you'll learn: Overview
@@ -28,14 +25,14 @@ To learn how to stream data from Solace PubSub+ broker to Azure messaging servic
 In this example we will create two queues in Solace PubSub+, one of it will receive messages from Azure function over HTTP and another over C#.
 Log on to Solace Console
 1.	Create a queue that will receive data from Azure function using REST <br />
-    solace> enable<br />
-    solace# configure<br />
-    solace# (configure)# message-spool message-vpn <VPN Name> <br />
-    solace(configure/message-spool/message-vpn)# create queue azure-rest-queue<br />
-    solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
-    solace(configure/message-vpn/my-azure-queue )# subscription topic azure/2/solace-rest<br />
-    solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
-    solace(configure/message-vpn/my-azure-queue )# exit<br />
+solace> enable<br/>
+solace# configure<br />
+solace# (configure)# message-spool message-vpn <VPN Name> <br />
+solace(configure/message-spool/message-vpn)# create queue **azure-rest-queue**<br />
+solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
+solace(configure/message-vpn/my-azure-queue )# subscription topic azure/2/solace-rest<br />
+solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
+solace(configure/message-vpn/my-azure-queue )# exit<br />
 
 
 2. Create a queue that will receive data from Azure function using C#<br />
@@ -45,7 +42,7 @@ Log on to Solace Console
    solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
    solace(configure/message-vpn/my-azure-queue )# end<br />
 
-#### Azure Function Setup
+#### Azure Function Setup (For C#/.Net APIs)
 
 * Create a new Azure function project in Visual Studio 
   ![ ](img/create-new-vs-project.png)
@@ -63,32 +60,151 @@ In the above screen you will do the following:
   * Specify Service Bus **Queue Name**. This is the queue that we will stream data from to Solace Event broker.
   * Click **Next** to finish create a project.
   
-* Open the local.settings.json file and add the following properties as shown in the picture below:
-    
-    //Update the Service Bus end point connection string below </br>
-    "SBConnection": "...=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",</br>
+* Open the **local.settings.json** file and add the following properties as shown in the code below:
 
-    //Update the Solace Host (SMF) URL string below</br>
-    "solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",</br>
-
-    //Update the Solace Username string below</br>
-    "solace-username": "solace-cloud-client",</br>
-
-    //Update the Solace Password string below</br>
-    "solace-password": "abcgdjsjj",</br>
-
-    //Update the Solace VPN Name string below</br>
-    "solace-vpnname": "sumeet",</br>
-
-    //Update the Solace Topic string below</br>
-    "solace-topic": "azure/2/solace"</br>
+//Update the Service Bus end point connection string below <br/>
+"SBConnection": "Endpoint=....windows.net/;SharedAccessKeyName=ListenOnly;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxx",<br />
+//Update the Solace Host (SMF) URL string below<br/>
+"solace-host": "mr1xi40mbgzuj7.messaging.solace.cloud",<br/>
+//Update the Solace Username string below<br/>
+"solace-username": "solace-cloud-client",<br/>
+//Update the Solace Password string below<br/>
+"solace-password": "abcgdjsjj",<br/>
+//Update the Solace VPN Name string below<br/>
+"solace-vpnname": "sumeet"<br/>
+//Update the Solace Topic string below<br/>
+"solace-topic": "azure/2/solace"<br/>
 
 * Using NuGet package manager, search and install Solace library.
   ![ ](img/add-solace-library.png)
 
+* Create a new class called **SolacePublisher** and add the following code to **SolacePublisher.cs** class.
+
+//Copy the following code and paste it in your Function1.cs file.
+
+`
+using System;
+using SolaceSystems.Solclient.Messaging;
+using System.Threading;
+using System.Text;
+
+namespace SB2SolaceCSharp
+{
+    public class SolacePublisher
+    {
+        private IContext context = null;
+        private ISession session = null;
+
+        private string sUserName = "default";
+        private string sPassword = "default";
+        private string sVPNName = "default";
+        private string sHost = "default";
+        private string sTopic = "default";
+
+        //public Object lockThis = new Object();
+
+
+        public SolacePublisher(string Host, string UserName, string Password, string VPNName, string Topic)
+        {
+            this.sHost = Host;
+            this.sUserName = UserName;
+            this.sPassword = Password;
+            this.sVPNName = VPNName;
+            this.sTopic = Topic;
+            connect2Solace();
+        }
+
+        ~SolacePublisher()
+        {
+            Console.WriteLine("In destructor - Will try to dispose session and context");
+            if (session != null)
+            {
+                session.Disconnect();
+                session.Dispose();
+                session = null;
+                Console.WriteLine("In destructor - disposed session");
+            }
+            if (context != null)
+            {
+                context.Dispose();
+                context = null;
+                Console.WriteLine("In destructor - disposed context");
+            }
+
+        }
+
+        public void sendMessage2Solace(String msg)
+        {
+            IMessage message = ContextFactory.Instance.CreateMessage();
+            message.Destination = ContextFactory.Instance.CreateTopic(sTopic);
+            message.DeliveryMode = MessageDeliveryMode.Direct;
+            message.BinaryAttachment = Encoding.ASCII.GetBytes(msg);
+
+            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, sTopic);
+            session.Send(message);
+            message.Dispose();
+            Console.WriteLine("Message sent. Exiting.");
+
+        }
+
+        public void connect2Solace()
+        {
+            Console.WriteLine("In connect2Solace");
+            ContextFactoryProperties cfp = new ContextFactoryProperties();
+
+            // Set log level.
+            cfp.SolClientLogLevel = SolLogLevel.Warning;
+            // Log errors to console.
+            cfp.LogToConsoleError();
+            // Must init the API before using any of its artifacts.
+            ContextFactory.Instance.Init(cfp);
+            ContextProperties contextProps = new ContextProperties();
+            SessionProperties sessionProps = new SessionProperties();
+
+            /******** Delete This ***********/
+            sHost = "54.219.47.90";
+            sUserName = "default";
+            sPassword = "default";
+            sVPNName = "default";
+            /********************************/
+            sessionProps.Host = sHost;
+            sessionProps.UserName = sUserName;
+            sessionProps.Password = sPassword;
+            sessionProps.SSLValidateCertificate = false;
+            sessionProps.VPNName = sVPNName;
+
+            //Connection retry logic
+            sessionProps.ConnectRetries = 3; //-1 means try to connect forever.
+            sessionProps.ConnectTimeoutInMsecs = 5000; //10 seconds
+            sessionProps.ReconnectRetries = 3; //-1 means try to reconnect forever.
+            sessionProps.ReconnectRetriesWaitInMsecs = 5000; //wait for 5 seconds before retry
+
+            // Compression is set as a number from 0-9, where 0 means "disable
+            // compression", and 9 means max compression. The default is no
+            // compression.
+            // Selecting a non-zero compression level auto-selects the
+            // compressed SMF port on the appliance, as long as no SMF port is
+            // explicitly specified.
+            //sessionProps.CompressionLevel = 9;
+
+            #region Create the Context
+
+            context = ContextFactory.Instance.CreateContext(contextProps, null);
+
+            #endregion
+
+            #region Create and connect the Session
+            session = context.CreateSession(sessionProps, null, null);
+            session.Connect();
+            #endregion
+        }
+    }
+}
+
+`
 * Add the following code to **function1.cs** class.
 
-  ![ ](img/function1.png)
+//Copy the following code and paste it in your Function1.cs file.
 
 `
 using System;
@@ -98,107 +214,23 @@ using Microsoft.Extensions.Logging;
 using SolaceSystems.Solclient.Messaging;
 using System.Threading;
 using System.Text;
-`
-Copy the following code and paste it in your Function1.cs file.
-``
+
 namespace SB2SolaceCSharp
 {
-
     public static class Function1
     {
-       
-        private static IContext context = null;
-        
-        private static IFlow flow = null;
-        
-        private static ISession session = null;
-        
-        private static ContextFactoryProperties cfp = new ContextFactoryProperties();
-        
-        private static string sUserName = Environment.GetEnvironmentVariable("solace-username");
-        
-        private static string sPassword = Environment.GetEnvironmentVariable("solace-password");
-        
-        private static string sVPNName = Environment.GetEnvironmentVariable("solace-vpnname");
-        
-        private static string sHost = Environment.GetEnvironmentVariable("solace-host");
-        
-        private static string sTopic = Environment.GetEnvironmentVariable("solace-topic");
-        
+        private static SolacePublisher solaceConnection = new SolacePublisher(
+            Environment.GetEnvironmentVariable("solace-host"),
+            Environment.GetEnvironmentVariable("solace-username"),
+            Environment.GetEnvironmentVariable("solace-password"),
+            Environment.GetEnvironmentVariable("solace-vpnname"),
+            Environment.GetEnvironmentVariable("solace-topic"));
+
         [FunctionName("Function1")]
-        public static void Run([ServiceBusTrigger("testq", Connection = "SBConnection")]string myQueueItem, ILogger log)
+        public static void Run([ServiceBusTrigger("azure2solacecsharp", Connection = "SBConnection")]string myQueueItem, ILogger log)
         {
-            connect();
-            log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
-            sendMessage2Solace(myQueueItem);
-        }
-        
-        public static void connect()
-        {
-            if (session == null)
-                connect2Solace();
-        }
-        
-        public static void sendMessage2Solace(String msg)
-        {
-            IMessage message = ContextFactory.Instance.CreateMessage();
-            message.Destination = ContextFactory.Instance.CreateTopic(sTopic);
-            message.DeliveryMode = MessageDeliveryMode.Direct;
-            message.BinaryAttachment = Encoding.ASCII.GetBytes(msg);
-        
-            Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, sTopic);
-            session.Send(message);
-            message.Dispose();
-            Console.WriteLine("Message sent. Exiting.");
-        
-        }
-        
-        public static void connect2Solace()
-        {
-            // Set log level.
-            cfp.SolClientLogLevel = SolLogLevel.Warning;
-            // Log errors to console.
-            cfp.LogToConsoleError();
-            // Must init the API before using any of its artifacts.
-            ContextFactory.Instance.Init(cfp);
-        
-            ContextProperties contextProps = new ContextProperties();
-            SessionProperties sessionProps = new SessionProperties();
-        
-            sessionProps.Host = sHost;
-            sessionProps.UserName = sUserName;
-            sessionProps.Password = sPassword;
-            sessionProps.SSLValidateCertificate = false;
-            sessionProps.VPNName = sVPNName;
-        
-            //Connection retry logic
-            sessionProps.ConnectRetries = -1; //-1 means try to connect forever.
-            sessionProps.ConnectTimeoutInMsecs = 10000; //10 seconds
-            sessionProps.ReconnectRetries = -1; //-1 means try to reconnect forever.
-            sessionProps.ReconnectRetriesWaitInMsecs = 5000; //wait for 5 seconds before retry
-        
-            // Compression is set as a number from 0-9, where 0 means "disable
-            // compression", and 9 means max compression. The default is no
-            // compression.
-            // Selecting a non-zero compression level auto-selects the
-            // compressed SMF port on the appliance, as long as no SMF port is
-            // explicitly specified.
-            sessionProps.CompressionLevel = 9;
-        
-            #region Create the Context
-        
-            context = ContextFactory.Instance.CreateContext(contextProps, null);
-        
-            #endregion
-        
-            #region Create and connect the Session
-        
-            session = context.CreateSession(sessionProps, null, null);
-        
-            session.Connect();
-            Console.WriteLine("Connected to Solace >>>>>>>>>.");
-        
-            #endregion
+            log.LogInformation($">>>>>>>>>>>>>>>>>>>>>>>C# ServiceBus queue trigger function processed message: {myQueueItem}");
+            solaceConnection.sendMessage2Solace(myQueueItem);
         }
     }
 }
@@ -220,4 +252,13 @@ namespace SB2SolaceCSharp
 
 ![ ](img/published.png)
 
-*  Now that your function is published, lets look at the Solace queue that will be receiving messages from servicebus.
+*  Now that your function is published, logon to your Azure portal and start the function app.
+![ ](img/start-function.png)
+*  Lets look at the Solace queue via Solace broker's WebUI that will be receiving messages from servicebus.
+![ ](img/no-msg-spooled.png)
+
+* Send test messages to Service Bus Queue (on which you have configured the trigger to invoke above Azure function). Below is a screen grab of console output from my test application.
+![ ](img/send-test-msg-2-sb.png)
+
+* Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
+![ ](img/c#-msg-rcvd.png)
