@@ -270,4 +270,4 @@ namespace SB2SolaceCSharp
    ![ ](img/send-test-msg-2-sb.png)
 
 13. Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
-   ![ ](img/c#-msg-rcvd.png)
+   ![ ](img/csharp-msg-rcvd.png)
