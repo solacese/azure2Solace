@@ -82,9 +82,13 @@ solace(configure/message-vpn/my-azure-queue )# exit<br />
 
 `
 using System;
+
 using SolaceSystems.Solclient.Messaging;
+
 using System.Threading;
+
 using System.Text;
+
 namespace SB2SolaceCSharp
 {
 
