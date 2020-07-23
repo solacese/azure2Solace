@@ -1227,7 +1227,7 @@
           }
         }
       },
-      "SolaceSystems.Solclient.Messaging/10.8.0": {
+      "SolaceSystems.Solclient.Messaging/10.9.0": {
         "type": "package",
         "compile": {
           "ref/netstandard2.0/SolaceSystems.Solclient.Messaging.dll": {}
@@ -4148,10 +4148,10 @@
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
       ]
     },
-    "SolaceSystems.Solclient.Messaging/10.8.0": {
-      "sha512": "OVgawB+Aj5NTTXYkF/esEFkkhakyLVVcoxQraljmLGCVHPwq740to7SaNCfbUe4d6gz3DpzSnJn5BS8bIkm6BA==",
+    "SolaceSystems.Solclient.Messaging/10.9.0": {
+      "sha512": "bWpNnMIrNRPDNQxdgOZ04IR5xRIkD1llyAgNhYHmIs1Qc2RH9VUbcgEV/apGRK4Gxzzgn/gtzfhm1RgyPgAZTg==",
       "type": "package",
-      "path": "solacesystems.solclient.messaging/10.8.0",
+      "path": "solacesystems.solclient.messaging/10.9.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4201,7 +4201,7 @@
         "runtimes/win-x86/native/libcrypto-1_1.dll",
         "runtimes/win-x86/native/libsolclient.dll",
         "runtimes/win-x86/native/libssl-1_1.dll",
-        "solacesystems.solclient.messaging.10.8.0.nupkg.sha512",
+        "solacesystems.solclient.messaging.10.9.0.nupkg.sha512",
         "solacesystems.solclient.messaging.nuspec"
       ]
     },
@@ -8362,7 +8362,7 @@
     ".NETCoreApp,Version=v3.1": [
       "Microsoft.Azure.WebJobs.Extensions.ServiceBus >= 4.1.0",
       "Microsoft.NET.Sdk.Functions >= 3.0.3",
-      "SolaceSystems.Solclient.Messaging >= 10.8.0"
+      "SolaceSystems.Solclient.Messaging >= 10.9.0"
     ]
   },
   "packageFolders": {
@@ -8419,7 +8419,7 @@
           },
           "SolaceSystems.Solclient.Messaging": {
             "target": "Package",
-            "version": "[10.8.0, )"
+            "version": "[10.9.0, )"
           }
         },
         "imports": [
@@ -8437,7 +8437,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
       }
     }
   }

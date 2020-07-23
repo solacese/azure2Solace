@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "vVlFBwpcu2Gc4DVYMZp7YjTGftkxkT2qyk6txRy/fhR/eJSfo8R47pf5Xuylc65gnK4zieUOjNh5gxuyFRvJEQ==",
+  "dgSpecHash": "SFrejzLI7sx3uHY4jAMZpBH0IRJadg8RakjIvWI/EcE30BAS4OLECJERaSvuqEB74URGznVV4PRVYXvIlvAQ+Q==",
   "success": true,
   "projectFilePath": "C:\\solace\\SB2SolaceCSharp\\SB2SolaceCSharp.csproj",
   "expectedPackageFiles": [
@@ -90,7 +90,7 @@
     "C:\\Users\\Administrator\\.nuget\\packages\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\solacesystems.solclient.messaging\\10.8.0\\solacesystems.solclient.messaging.10.8.0.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\solacesystems.solclient.messaging\\10.9.0\\solacesystems.solclient.messaging.10.9.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.appcontext\\4.3.0\\system.appcontext.4.3.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.buffers\\4.5.0\\system.buffers.4.5.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",

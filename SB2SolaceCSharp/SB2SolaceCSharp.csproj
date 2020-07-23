@@ -1,3 +1,4 @@
+﻿
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -6,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.1.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3" />
-    <PackageReference Include="SolaceSystems.Solclient.Messaging" Version="10.8.0" />
+    <PackageReference Include="SolaceSystems.Solclient.Messaging" Version="10.9.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
