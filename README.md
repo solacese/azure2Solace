@@ -38,21 +38,24 @@ solace(configure/message-vpn/my-azure-queue )# exit<br />
 2. Create a queue that will receive data from Azure function using C#<br />
    solace(configure/message-spool/message-vpn)# create queue **azure-c#-queue**<br />
    solace(configure/message-vpn/my-azure-queue )# permission all consume <br />
-   solace(configure/message-vpn/my-azure-queue )# subscription topic azure/2/solace<br />
+   solace(configure/message-vpn/my-azure-queue )# subscription topic ÷÷<br />
    solace(configure/message-vpn/my-azure-queue )# no shutdown<br />
    solace(configure/message-vpn/my-azure-queue )# end<br />
 
-#### Azure Function Setup (For C#/.Net APIs)
+### Azure Function Setup
+Azure allows you to use multiple programming languages and APIs. However, for this codelab, I will walk you through usage of  C# using Solace C#API  and REST .
+
+####  For C#/.Net using Solace C# APIs
 
 1. Create a new Azure function project in Visual Studio 
-  ![ ](img/create-new-vs-project.png)
-  Select **Azure Functions** from the list and click **Next**
+    ![ ](img/create-new-vs-project.png)
+    Select **Azure Functions** from the list and click **Next**
 
 2. Configure your new project
-  ![ ](img/configure-project.png)
+    ![ ](img/configure-project.png)
 
 3. Create a new Azure Function application
-  ![ ](img/create-azure-func-app.png)
+    ![ ](img/create-azure-func-app.png)
    In the above screen you will do the following:
      * Select **Azure Service Bus Trigger** from the list
      * Specifiy **Storage Account**
@@ -94,7 +97,7 @@ namespace SB2SolaceCSharp
 
     public class SolacePublisher
     {
-
+    
         private IContext context = null;
         private ISession session = null;
         private string sUserName = "default";
@@ -102,7 +105,7 @@ namespace SB2SolaceCSharp
         private string sVPNName = "default";
         private string sHost = "default";
         private string sTopic = "default";
-
+    
         //public Object lockThis = new Object();
 
 
@@ -115,7 +118,7 @@ namespace SB2SolaceCSharp
             this.sTopic = Topic;
             connect2Solace();
         }
-
+    
         ~SolacePublisher()
         {
             Console.WriteLine("In destructor - Will try to dispose session and context");
@@ -132,28 +135,28 @@ namespace SB2SolaceCSharp
                 context = null;
                 Console.WriteLine("In destructor - disposed context");
             }
-
+    
         }
-
+    
         public void sendMessage2Solace(String msg)
         {
             IMessage message = ContextFactory.Instance.CreateMessage();
             message.Destination = ContextFactory.Instance.CreateTopic(sTopic);
             message.DeliveryMode = MessageDeliveryMode.Direct;
             message.BinaryAttachment = Encoding.ASCII.GetBytes(msg);
-
+    
             Console.WriteLine("About to send message '{0}' to topic '{1}'", msg, sTopic);
             session.Send(message);
             message.Dispose();
             Console.WriteLine("Message sent. Exiting.");
-
+    
         }
-
+    
         public void connect2Solace()
         {
             Console.WriteLine("In connect2Solace");
             ContextFactoryProperties cfp = new ContextFactoryProperties();
-
+    
             // Set log level.
             cfp.SolClientLogLevel = SolLogLevel.Warning;
             // Log errors to console.
@@ -162,7 +165,7 @@ namespace SB2SolaceCSharp
             ContextFactory.Instance.Init(cfp);
             ContextProperties contextProps = new ContextProperties();
             SessionProperties sessionProps = new SessionProperties();
-
+    
             /******** Delete This ***********/
             sHost = "54.219.47.90";
             sUserName = "default";
@@ -174,13 +177,13 @@ namespace SB2SolaceCSharp
             sessionProps.Password = sPassword;
             sessionProps.SSLValidateCertificate = false;
             sessionProps.VPNName = sVPNName;
-
+    
             //Connection retry logic
             sessionProps.ConnectRetries = 3; //-1 means try to connect forever.
             sessionProps.ConnectTimeoutInMsecs = 5000; //10 seconds
             sessionProps.ReconnectRetries = 3; //-1 means try to reconnect forever.
             sessionProps.ReconnectRetriesWaitInMsecs = 5000; //wait for 5 seconds before retry
-
+    
             // Compression is set as a number from 0-9, where 0 means "disable
             // compression", and 9 means max compression. The default is no
             // compression.
@@ -188,13 +191,13 @@ namespace SB2SolaceCSharp
             // compressed SMF port on the appliance, as long as no SMF port is
             // explicitly specified.
             //sessionProps.CompressionLevel = 9;
-
+    
             #region Create the Context
-
+    
             context = ContextFactory.Instance.CreateContext(contextProps, null);
-
+    
             #endregion
-
+    
             #region Create and connect the Session
             session = context.CreateSession(sessionProps, null, null);
             session.Connect();
@@ -233,7 +236,7 @@ namespace SB2SolaceCSharp
             Environment.GetEnvironmentVariable("solace-password"),
             Environment.GetEnvironmentVariable("solace-vpnname"),
             Environment.GetEnvironmentVariable("solace-topic"));
-
+    
         [FunctionName("Function1")]
         public static void Run([ServiceBusTrigger("azure2solacecsharp", Connection = "SBConnection")]string myQueueItem, ILogger log)
         {
@@ -261,13 +264,107 @@ namespace SB2SolaceCSharp
    ![ ](img/published.png)
 
 10. Now that your function is published, logon to your Azure portal and start the function app.
-   ![ ](img/start-function.png)
+      ![ ](img/start-function.png)
    
 11. Lets look at the Solace queue via Solace broker's WebUI that will be receiving messages from servicebus.
-   ![ ](img/no-msg-spooled.png)
+      ![ ](img/no-msg-spooled.png)
 
 12. Send test messages to Service Bus Queue (on which you have configured the trigger to invoke above Azure function). Below is a screen grab of console output from my test application.
-   ![ ](img/send-test-msg-2-sb.png)
+      ![ ](img/send-test-msg-2-sb.png)
 
 13. Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
-   ![ ](img/csharp-msg-rcvd.png)
+      ![ ](img/csharp-msg-rcvd.png)
+
+####  For C#/.Net using REST APIs
+1. Please follow steps 1-3 above to create a new Azure functions project.
+2. Open the **local.settings.json** file and add the following properties as shown in the code below:
+`
+
+		//Update all the below property values to point to your environment
+	"SBConnection": "Endpoint=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=sendListen;SharedAccessKey=xxxxxxxxxxxxxxxxxxxxxxxx;",
+	"solace-host": "sumeet-solace.mymaas.net",
+	"solace-tls": false,
+	"solace-plain-text-port": 80,
+	"solace-tls-port": 443,
+	"solace-username": "default",
+	"solace-password": "dc7u1ne2ps16r5p1ss2frq4b4n",
+	"solace-topic": "azure/2/solace-rest"
+  }
+}
+`
+3. Repeat step 5 above.
+4. Rename function1.cs to **funcSB2SolaceREST.cs** and Copy the below code in **funcSB2SolaceREST.cs**
+`
+using System;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
+
+namespace SB2SolaceRest
+{
+
+    public static class funcSB2SolaceREST
+    {
+        private static readonly HttpClient _Client = new HttpClient();
+        private static string solaceRESTUrl = null;
+        private static Boolean init = initializeHttpClient();
+    
+        [FunctionName("funcSB2SolaceREST")]
+        public static async void Run([ServiceBusTrigger("azure2solacerest", Connection = "SBConnection")] string myQueueItem, ILogger log)
+        {
+            log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
+            if (initializeHttpClient())
+            {
+                HttpRequestMessage httpRequestMessage = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(solaceRESTUrl)
+                };
+                HttpContent httpContent = new StringContent(myQueueItem, Encoding.UTF8, "application/text");
+                httpRequestMessage.Content = httpContent;
+                var response = await _Client.SendAsync(httpRequestMessage);
+                string responseString = await response.Content.ReadAsStringAsync();
+                log.LogInformation($"Response from Solace :{responseString}, Response Code :{response.StatusCode}");
+            }
+            else
+            {
+                log.LogInformation("Unable to initialize HTTP Client");
+                throw new Exception("Unable to initialize HTTP Client");
+            }
+        }
+    
+        public static bool initializeHttpClient()
+        {
+            if (!init)
+            {
+                string username = Environment.GetEnvironmentVariable("solace-username");
+                string password = Environment.GetEnvironmentVariable("solace-password");
+                string auth = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+                _Client.DefaultRequestHeaders.Add("Authorization", auth);
+                string port = null;
+                string protocol = "http";
+                if (Boolean.Parse(Environment.GetEnvironmentVariable("solace-tls")))
+                {
+                    port = Environment.GetEnvironmentVariable("solace-tls-port");
+                    protocol = "https";
+                    //TODO: If 2 -way TLS, we may need to add Cert related stuff
+                }
+                else
+                    port = Environment.GetEnvironmentVariable("solace-plain-text-port");
+                solaceRESTUrl = protocol + "://" + Environment.GetEnvironmentVariable("solace-host") + ":" + port +
+                                "/" + Environment.GetEnvironmentVariable("solace-topic");
+                init = true;
+            }
+            return init;
+        }
+    }
+
+}
+`
+5. Repeat step 8-12 above.
+6. Refresh your Solace broker's WebUI to confirm you have received messages from ServiceBus.
+      ![ ](img/rest-msg-rcvd.png)
