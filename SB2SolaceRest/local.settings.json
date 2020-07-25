@@ -1,0 +1,15 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=sumeetkstorage;AccountKey=xxxxxxxxxxxxx==;BlobEndpoint=https://sumeetkstorage.blob.core.windows.net/;TableEndpoint=https://sumeetkstorage.table.core.windows.net/;QueueEndpoint=https://sumeetkstorage.queue.core.windows.net/;FileEndpoint=https://sumeetkstorage.file.core.windows.net/",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SBConnection": "Endpoint=sb://sumeet.servicebus.windows.net/;SharedAccessKeyName=sendListen;SharedAccessKey=xxxxxxxxxxxxxxx=;",
+    "solace-host": "sumeet-solace.mymaas.net",
+    "solace-tls": false,
+    "solace-plain-text-port": 80,
+    "solace-tls-port": 443,
+    "solace-username": "default",
+    "solace-password": "dc7u1ne2ps16r5p1ss2frq4b4n",
+    "solace-topic": "azure/2/solace-rest"
+  }
+}
